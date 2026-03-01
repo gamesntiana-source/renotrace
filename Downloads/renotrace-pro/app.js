@@ -654,6 +654,18 @@ function checkDriveToken() {
   } else if (db.settings?.driveToken) {
     driveToken = db.settings.driveToken;
   }
+  // Auto-sync quotidien : si connecté et dernière sync > 24h, déclenche dans 10s
+  if (driveToken) {
+    const last = db.settings.lastSync ? new Date(db.settings.lastSync).getTime() : 0;
+    if (Date.now() - last > 24 * 60 * 60 * 1000) {
+      setTimeout(() => driveSync(), 10000);
+    }
+    // Vérifie toutes les heures si une sync quotidienne est due
+    setInterval(() => {
+      const l = db.settings.lastSync ? new Date(db.settings.lastSync).getTime() : 0;
+      if (driveToken && Date.now() - l > 24 * 60 * 60 * 1000) driveSync();
+    }, 60 * 60 * 1000);
+  }
 }
 async function driveSync() {
   if (!driveToken) return;
@@ -1887,6 +1899,28 @@ function saveGroqKey() {
   toast('Clé IA enregistrée ✓', 'success');
 }
 function showDriveSettings() {
+  if (driveToken) {
+    const lastSync = db.settings.lastSync ? timeAgo(db.settings.lastSync) : 'jamais';
+    const lastDate = db.settings.lastSync ? formatDate(db.settings.lastSync) + ' ' + formatTime(db.settings.lastSync) : '';
+    openModal(`
+      <div class="modal-title">☁️ Google Drive</div>
+      <div style="text-align:center;padding:20px 0 12px">
+        <div style="font-size:48px;margin-bottom:8px">✅</div>
+        <div style="font-size:17px;font-weight:700;color:var(--text1);margin-bottom:4px">Connecté</div>
+        <div style="font-size:13px;color:var(--text2)">Dernière sauvegarde : <b>${lastSync}</b>${lastDate ? '<br><span style="font-size:11px">' + lastDate + '</span>' : ''}</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:4px;opacity:.7">Sauvegarde automatique quotidienne activée</div>
+      </div>
+      <button class="btn btn-primary" style="margin-bottom:10px" onclick="manualDriveSync()">☁️ Sauvegarder maintenant</button>
+      <button class="btn" style="background:var(--bg3);color:var(--text2);margin-bottom:8px" onclick="disconnectDrive()">Se déconnecter</button>
+      <div style="text-align:center;margin-top:6px">
+        <span style="font-size:12px;color:var(--blue);cursor:pointer;text-decoration:underline" onclick="showDriveConfig()">Modifier le Client ID</span>
+      </div>
+    `);
+  } else {
+    showDriveConfig();
+  }
+}
+function showDriveConfig() {
   openModal(`
     <div class="modal-title">☁️ Google Drive</div>
     <div style="background:var(--blue-l);border:1.5px solid var(--blue-m);border-radius:10px;padding:12px;margin-bottom:14px;font-size:12px;color:var(--blue)">
@@ -1903,8 +1937,22 @@ function showDriveSettings() {
       <button class="btn btn-secondary" onclick="saveDriveClientId()">Enregistrer</button>
       <button class="btn btn-primary" onclick="driveConnect()">Se connecter</button>
     </div>
-    ${driveToken ? '<div style="color:var(--green);font-weight:700;margin-top:10px">✅ Connecté</div>' : ''}
   `);
+}
+async function manualDriveSync() {
+  closeModal();
+  toast('Sauvegarde en cours...', 'info');
+  await driveSync();
+  toast('Sauvegarde Google Drive effectuée ✓', 'success');
+  renderProfile();
+}
+function disconnectDrive() {
+  driveToken = null;
+  db.settings.driveToken = null;
+  dbSave();
+  closeModal();
+  renderProfile();
+  toast('Google Drive déconnecté', 'info');
 }
 function validateClientIdInput(input) {
   const errEl = el('d-id-error');
