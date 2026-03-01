@@ -1205,6 +1205,7 @@ function openLightbox(photoId) {
       ${can(2) ? `<button style="padding:8px 16px;background:var(--red);color:white;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer" onclick="deletePhoto('${p.id}')">🗑 Supprimer</button>` : ''}
     </div>`;
   lb.classList.add('open');
+  el('bottomNav').style.display = 'none';
 }
 function downloadPhoto(photoId) {
   const p = db.photos.find(x => x.id === photoId);
@@ -1222,7 +1223,7 @@ function downloadPhoto(photoId) {
   document.body.removeChild(a);
   toast('Photo téléchargée ✓', 'success');
 }
-function closeLightbox() { document.getElementById('lightboxEl')?.classList.remove('open'); }
+function closeLightbox() { document.getElementById('lightboxEl')?.classList.remove('open'); el('bottomNav').style.display = 'flex'; }
 function deletePhoto(id) {
   if (!confirm('Supprimer cette photo ?')) return;
   db.photos = db.photos.filter(p => p.id !== id);
