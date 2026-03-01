@@ -1,0 +1,25 @@
+{
+  "name": "RénoTrace Pro",
+  "short_name": "RénoTrace",
+  "description": "Suivi de chantier professionnel avec IA intégrée",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#F1F5F9",
+  "theme_color": "#0F172A",
+  "orientation": "portrait",
+  "categories": ["business", "productivity"],
+  "lang": "fr",
+  "icons": [
+    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Nouvelle photo",
+      "short_name": "Photo",
+      "description": "Ouvrir la caméra directement",
+      "url": "./index.html#camera",
+      "icons": [{ "src": "./icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
