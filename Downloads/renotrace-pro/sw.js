@@ -1,10 +1,12 @@
-const CACHE_NAME = 'renotrace-pro-v2';
+const CACHE_NAME = 'renotrace-pro-v3';
 const ASSETS = [
   './',
   './index.html',
   './styles.css',
   './app.js',
   './manifest.json',
+  './icon-192.png',
+  './icon-512.png',
   'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap'
 ];
 

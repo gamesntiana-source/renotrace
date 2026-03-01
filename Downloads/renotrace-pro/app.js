@@ -18,6 +18,32 @@ const ROLES = {
 const SURFACES = ['Sol', 'Mur', 'Plafond', 'Façade', 'Combles', 'Autre'];
 const AVATAR_COLORS = ['#2563EB','#7C3AED','#D97706','#16A34A','#DC2626','#0891B2','#9333EA'];
 
+// ═══ GUIDES UTILISATEURS (encodés — embarqués dans la source) ═══
+const _GUIDE_DATA = {
+  superadmin: 'IyDwn5uh77iPIEd1aWRlIEFkbWluaXN0cmF0ZXVyIOKAlCBSw6lub1RyYWNlIFBybw0KDQoqKlLDtGxlIDogU3VwZXIgQWRtaW4g8J+boe+4jyAvIERpcmlnZWFudCDwn5GUKioNCkFjY8OocyBjb21wbGV0IMOgIHRvdXRlcyBsZXMgZm9uY3Rpb25uYWxpdMOpcyA6IGdlc3Rpb24gZGVzIHV0aWxpc2F0ZXVycywgc3VwZXJ2aXNpb24sIHNhdXZlZ2FyZGUuDQoNCi0tLQ0KDQojIyDwn5SQIENvbXB0ZSBwYXIgZMOpZmF1dA0KLSBJZGVudGlmaWFudCA6IGBhZG1pbmAgfCBNb3QgZGUgcGFzc2UgOiBgMTIzNGANCi0g4pqg77iPICoqQ2hhbmdleiBsZSBtb3QgZGUgcGFzc2UgaW1tw6lkaWF0ZW1lbnQqKiBhcHLDqHMgbGEgcHJlbWnDqHJlIGNvbm5leGlvbg0KLSBDb25maWd1cmV6IHZvdHJlIGVtYWlsIGRhbnMgUHJvZmlsIOKGkiBNb2RpZmllciBtb24gcHJvZmlsIChuw6ljZXNzYWlyZSBwb3VyIGxlcyBub3RpZmljYXRpb25zKQ0KDQotLS0NCg0KIyMg8J+PoCBUYWJsZWF1IGRlIGJvcmQNCg0KTGVzIDQgY2FydGVzIHNvbnQgKipjbGlxdWFibGVzKiogOg0KLSDwn4+X77iPICoqQ2hhbnRpZXJzIGFjdGlmcyoqIOKGkiBsaXN0ZSBkZXMgY2hhbnRpZXJzDQotIPCfk7ggKipQaG90b3MgYXVqb3VyZCdodWkqKiDihpIgY2hhbnRpZXIgbGUgcGx1cyBhY3RpZg0KLSDwn5G3ICoqQWN0aWZzIGF1am91cmQnaHVpKiog4oaSIHBhbmVsIGFkbWluDQotIPCfk4ogKipDZXR0ZSBzZW1haW5lKiog4oaSIGxpc3RlIGRlcyBjaGFudGllcnMNCg0KLS0tDQoNCiMjIPCfkaUgUGFuZWwgQWRtaW5pc3RyYXRpb24gKFByb2ZpbCDihpIgUGFuZWwgU3VwZXIgQWRtaW4pDQoNCiMjIyBWdWUgZCdlbnNlbWJsZQ0KLSBTdGF0cyBnbG9iYWxlcyBlbiB0ZW1wcyByw6llbA0KLSBBbGVydGVzIHNpIHVuIG9ww6lyYXRldXIgbidhIHBhcyBwcmlzIGRlIHBob3RvIGF1am91cmQnaHVpDQotIEFjY8OocyByYXBpZGUgYXV4IGNoYW50aWVycywgcGhvdG9zLCBvcMOpcmF0ZXVycw0KDQojIyMgT3DDqXJhdGV1cnMNCi0gQ3LDqWVyIHVuIGNvbXB0ZSA6IG5vbSwgZW1haWwsIGlkZW50aWZpYW50LCBtb3QgZGUgcGFzc2UsIHLDtGxlDQotICoqUsO0bGVzIGRpc3BvbmlibGVzKiogOiBUZWNobmljaWVuICgxKSDCtyBDaGVmIGNoYW50aWVyICgyKSDCtyBDb25kdWN0ZXVyICgzKSDCtyBEaXJpZ2VhbnQgKDQpIMK3IFN1cGVyIEFkbWluICg1KQ0KLSBTdXBwcmltZXIgdW4gY29tcHRlDQotIFZvaXIgbGVzIHN0YXRzIHBhciBvcMOpcmF0ZXVyIChuYiBwaG90b3MsIGRlcm5pw6hyZSBjb25uZXhpb24pDQoNCiMjIyBEZW1hbmRlcyBkJ2FjY8Oocw0KLSBRdWFuZCBxdWVscXUndW4gZGVtYW5kZSB1biBhY2PDqHMgZGVwdWlzIGwnw6ljcmFuIGRlIGNvbm5leGlvbg0KLSBBcHByb3V2ZXIg4oaSIGNyw6llIGxlIGNvbXB0ZSBldCBnw6luw6hyZSB1biBtb3QgZGUgcGFzc2UgdGVtcG9yYWlyZSDDoCBjb21tdW5pcXVlcg0KLSBSZWZ1c2VyIOKGkiBzdXBwcmltZSBsYSBkZW1hbmRlDQoNCiMjIyBUcmHDp2FiaWxpdMOpDQotIEhpc3RvcmlxdWUgZGUgdG91dGVzIGxlcyBwaG90b3MgKDUwIGRlcm5pw6hyZXMpDQotIEZpbHRyYWJsZSBwYXIgbm9tLCBjaGFudGllciwgb3DDqXJhdGV1cg0KDQojIyMg4pqg77iPIFByb2Jsw6htZXMNCi0gVG91cyBsZXMgcHJvYmzDqG1lcyBzaWduYWzDqXMgcGFyIGwnw6lxdWlwZQ0KLSBGaWx0cmV6IHBhciBjaGFudGllciwgc8OpdsOpcml0w6ksIHN0YXR1dA0KLSBSw6lzb2x2ZXogbGVzIHByb2Jsw6htZXMgZGlyZWN0ZW1lbnQgZGVwdWlzIGNlIHBhbm5lYXUNCi0gVm91cyByZWNldmV6IHVuIGVtYWlsIMOgIGNoYXF1ZSBub3V2ZWF1IHByb2Jsw6htZSBzaWduYWzDqQ0KDQojIyMg8J+TiyBUw6JjaGVzDQotIFRvdXRlcyBsZXMgdMOiY2hlcyBkZSB0b3VzIGxlcyBvcMOpcmF0ZXVycw0KLSBHcm91cMOpZXMgcGFyIHV0aWxpc2F0ZXVyIGF2ZWMgc3RhdHV0IChmYWl0IC8gcGFzIGZhaXQpDQoNCiMjIyDwn5SNIEpvdXJuYWwgZCdhdWRpdA0KLSAxMDAgZGVybmllcnMgw6l2w6luZW1lbnRzIDogY29ubmV4aW9ucywgY3LDqWF0aW9ucywgY2hhbmdlbWVudHMgZGUgbW90IGRlIHBhc3NlDQotIE5vbiBtb2RpZmlhYmxlIOKAlCB0cmHDp2FiaWxpdMOpIGNvbXBsw6h0ZQ0KDQojIyMgU2F1dmVnYXJkZQ0KLSAqKkdvb2dsZSBEcml2ZSoqIDogc2F1dmVnYXJkZSBhdXRvbWF0aXF1ZSBjaGlmZnLDqWUNCiAgLSBBbGxleiBzdXIgY29uc29sZS5jbG91ZC5nb29nbGUuY29tIOKGkiBDcsOpZXIgdW4gcHJvamV0IOKGkiBBY3RpdmVyIERyaXZlIEFQSSDihpIgQ3LDqWVyIGRlcyBpZGVudGlmaWFudHMgT0F1dGggMi4wDQogIC0gQ29waWV6IGxlICoqQ2xpZW50IElEKiogKGZvcm1hdCA6IGB4eHh4eC5hcHBzLmdvb2dsZXVzZXJjb250ZW50LmNvbWApDQogIC0g4pqg77iPIE5lIHBhcyBjb2xsZXIgdW5lIFVSTCDigJQgdW5pcXVlbWVudCBsJ2lkZW50aWZpYW50DQotICoqRmlyZWJhc2UqKiA6IHN5bmMgdGVtcHMgcsOpZWwgZW50cmUgYXBwYXJlaWxzIChwcsOpLWNvbmZpZ3Vyw6kpDQotICoqRXhwb3J0IEpTT04qKiA6IHNhdXZlZ2FyZGUgY29tcGzDqHRlIHTDqWzDqWNoYXJnZWFibGUNCi0gKipJbXBvcnQgSlNPTioqIDogcmVzdGF1cmF0aW9uIGRlcHVpcyB1biBmaWNoaWVyIGRlIHNhdXZlZ2FyZGUNCg0KLS0tDQoNCiMjIOKYge+4jyBHb29nbGUgRHJpdmUg4oCUIENvbmZpZ3VyYXRpb24gY29ycmVjdGUNCg0KTGUgQ2xpZW50IElEIGRvaXQgYXZvaXIgY2UgZm9ybWF0IGV4YWN0IDoNCmBgYA0KMTc5MTgyNzUxNjg5LXh4eHh4eHh4eHh4eHh4eHh4eC5hcHBzLmdvb2dsZXVzZXJjb250ZW50LmNvbQ0KYGBgDQoqKlBBUyoqIHVuZSBVUkwsICoqUEFTKiogdW4gbGllbiBgaHR0cHM6Ly8uLi5gDQoNCsOJdGFwZXMgOg0KMS4gY29uc29sZS5jbG91ZC5nb29nbGUuY29tIOKGkiBOb3V2ZWF1IHByb2pldA0KMi4gQVBJcyBldCBzZXJ2aWNlcyDihpIgQWN0aXZlciAiR29vZ2xlIERyaXZlIEFQSSINCjMuIElkZW50aWZpYW50cyDihpIgQ3LDqWVyIOKGkiBPQXV0aCAyLjAg4oaSIEFwcGxpY2F0aW9uIFdlYg0KNC4gVVJJIGRlIHJlZGlyZWN0aW9uIDogbCdVUkwgZGUgdm90cmUgYXBwbGljYXRpb24NCjUuIENvcGllciBsZSAqKkNsaWVudCBJRCoqIOKGkiBsZSBjb2xsZXIgZGFucyBSw6lub1RyYWNlDQoNCi0tLQ0KDQojIyDwn6SWIEFzc2lzdGFudCBJQQ0KDQotIEFsaW1lbnTDqSBwYXIgR3JvcSAoTGxhbWEgMy4xKSBhdmVjIHBvb2wgZGUgY2zDqXMgaW50w6lncsOpDQotIENvbnRleHRlIGNvbXBsZXQgOiBjaGFudGllcnMsIHBob3RvcyBkdSBqb3VyLCBwcm9ibMOobWVzLCB1dGlsaXNhdGV1cnMgYWN0aWZzDQotIEFqb3V0ZXogdm90cmUgcHJvcHJlIGNsw6kgR3JvcSBkYW5zIFByb2ZpbCDihpIgc2kgbGVzIGNsw6lzIGludMOpZ3LDqWVzIHNvbnQgw6lwdWlzw6llcw0KDQotLS0NCg0KIyMg8J+TmiBEaXN0cmlidWVyIGxlcyBndWlkZXMNCg0KTGVzIGd1aWRlcyBwYXIgcsO0bGUgc29udCBkYW5zIGxlIGRvc3NpZXIgZGUgbCdhcHBsaWNhdGlvbiA6DQotIGBHVUlERS1URUNITklDSUVOLm1kYA0KLSBgR1VJREUtQ0hFRi1DSEFOVElFUi5tZGANCi0gYEdVSURFLUNPTkRVQ1RFVVIubWRgDQotIGBHVUlERS1BRE1JTi5tZGANCg0KT3UgZGVwdWlzIGwnYXBwIDogUHJvZmlsIOKGkiBHdWlkZSBkJ3V0aWxpc2F0aW9uIOKGkiBUw6lsw6ljaGFyZ2VyDQoNCi0tLQ0KDQoqUsOpbm9UcmFjZSBQcm8gdjIuMCDigJQgR3VpZGUgQWRtaW5pc3RyYXRldXIqDQo=',
+  technicien: 'IyDwn5OxIEd1aWRlIFRlY2huaWNpZW4g4oCUIFLDqW5vVHJhY2UgUHJvDQoNCioqUsO0bGUgOiBUZWNobmljaWVuIPCflKcqKg0KVm91cyDDqnRlcyBzdXIgbGUgdGVycmFpbi4gVm90cmUgbWlzc2lvbiA6IGRvY3VtZW50ZXIgbGVzIGNoYW50aWVycyBhdmVjIGRlcyBwaG90b3MuDQoNCi0tLQ0KDQojIyDwn5SQIENvbm5leGlvbg0KLSBPdXZyZXogbCdhcHBsaWNhdGlvbiBkYW5zIHZvdHJlIG5hdmlnYXRldXINCi0gRW50cmV6IHZvdHJlICoqaWRlbnRpZmlhbnQqKiBldCAqKm1vdCBkZSBwYXNzZSoqIChmb3VybmlzIHBhciBsJ2FkbWluKQ0KLSBTaSBjJ2VzdCB2b3RyZSBwcmVtacOocmUgY29ubmV4aW9uLCB2b3VzIGRldnJleiBjaGFuZ2VyIHZvdHJlIG1vdCBkZSBwYXNzZQ0KDQotLS0NCg0KIyMg8J+TuCBQcmVuZHJlIHVuZSBwaG90bw0KDQoxLiBBcHB1eWV6IHN1ciBsZSAqKmJvdXRvbiDwn5O3KiogYXUgY2VudHJlIGRlIGxhIGJhcnJlIGR1IGJhcw0KMi4gU8OpbGVjdGlvbm5leiBsZSAqKmNoYW50aWVyKiogZGFucyBsYSBsaXN0ZQ0KMy4gQ2hvaXNpc3NleiBsYSAqKnN1cmZhY2UqKiA6IFNvbCwgTXVyLCBQbGFmb25kLCBGYcOnYWRlLCBldGMuDQo0LiBBam91dGV6IHVuZSAqKm5vdGUqKiBzaSBiZXNvaW4gKGV4IDogZmlzc3VyZSBjw7R0w6kgZmVuw6p0cmUpDQo1LiBBcHB1eWV6IHN1ciAqKvCfk7gqKiBwb3VyIGNhcHR1cmVyIOKAlCBvdSAqKvCflrwgR2FsZXJpZSoqIHBvdXIgaW1wb3J0ZXIgdW5lIHBob3RvIGV4aXN0YW50ZQ0KNi4gTGEgcGhvdG8gZXN0IGF1dG9tYXRpcXVlbWVudCAqKmfDqW9sb2NhbGlzw6llKiogZXQgZW5yZWdpc3Ryw6llDQoNCj4g4pqg77iPIEFzc3VyZXotdm91cyBkJ2F1dG9yaXNlciBsYSBjYW3DqXJhIGV0IGxhIGxvY2FsaXNhdGlvbiBkYW5zIHZvdHJlIG5hdmlnYXRldXIuDQoNCi0tLQ0KDQojIyDwn4+X77iPIFZvaXIgbGVzIGNoYW50aWVycw0KDQotIE9uZ2xldCAqKkNoYW50aWVycyoqIDogbGlzdGUgZGUgdG91cyB2b3MgY2hhbnRpZXJzDQotIEFwcHV5ZXogc3VyIHVuIGNoYW50aWVyIHBvdXIgdm9pciBzZXMgcGhvdG9zLCBzb24gYXZhbmNlbWVudCBldCBzZXMgaW5mb3JtYXRpb25zDQotIExlcyBwaG90b3Mgc29udCBncm91cMOpZXMgKipwYXIgam91cioqDQotIEFwcHV5ZXogc3VyIHVuZSBwaG90byBwb3VyIGwnYWdyYW5kaXIg4oCUIHZvdXMgcG91dmV6IGF1c3NpIGxhICoqdMOpbMOpY2hhcmdlcioqIOKsh++4jw0KDQotLS0NCg0KIyMg8J+TiyBUw6JjaGVzIHBlcnNvbm5lbGxlcw0KDQotIFN1ciBsJyoqQWNjdWVpbCoqLCB1bmUgc2VjdGlvbiAqKlTDomNoZXMqKiB2b3VzIHBlcm1ldCBkZSBub3RlciB2b3MgdMOiY2hlcyBkdSBqb3VyDQotIENvY2hlei1sZXMgYXUgZnVyIGV0IMOgIG1lc3VyZQ0KLSBWb3MgdMOiY2hlcyBzb250IHByaXbDqWVzICh2b3RyZSBjaGVmIHBldXQgbGVzIGNvbnN1bHRlcikNCg0KLS0tDQoNCiMjIPCfkaQgUHJvZmlsDQoNCi0gT25nbGV0ICoqUHJvZmlsKiogOiBtb2RpZmlleiB2b3RyZSBub20sIGVtYWlsLCBtb3QgZGUgcGFzc2UNCi0gVMOpbMOpY2hhcmdleiB2b3RyZSBndWlkZSBkJ3V0aWxpc2F0aW9uDQoNCi0tLQ0KDQojIyDinZMgRW4gY2FzIGRlIHByb2Jsw6htZQ0KDQotIENvbnRhY3RleiB2b3RyZSBjaGVmIGRlIGNoYW50aWVyIG91IGwnYWRtaW5pc3RyYXRldXINCi0gU2kgbCdhcHBsaWNhdGlvbiBuZSBzJ291dnJlIHBhcywgYWN0dWFsaXNleiBsYSBwYWdlIChGNSkNCg0KLS0tDQoNCipSw6lub1RyYWNlIFBybyB2Mi4wIOKAlCBHdWlkZSBUZWNobmljaWVuKg0K',
+  chef: 'IyDwn5G3IEd1aWRlIENoZWYgZGUgQ2hhbnRpZXIg4oCUIFLDqW5vVHJhY2UgUHJvDQoNCioqUsO0bGUgOiBDaGVmIGRlIGNoYW50aWVyIPCfkbcqKg0KVm91cyBnw6lyZXogdW4gb3UgcGx1c2lldXJzIGNoYW50aWVycywgY29vcmRvbm5leiB2b3RyZSDDqXF1aXBlIGV0IHN1aXZleiBsJ2F2YW5jZW1lbnQuDQoNCi0tLQ0KDQojIyDwn5SQIENvbm5leGlvbg0KLSBFbnRyZXogdm90cmUgaWRlbnRpZmlhbnQgZXQgbW90IGRlIHBhc3NlDQotIFByZW1pZXIgY29ubmV4aW9uIOKGkiBjaGFuZ2V6IHZvdHJlIG1vdCBkZSBwYXNzZSBpbW3DqWRpYXRlbWVudA0KDQotLS0NCg0KIyMg8J+Pl++4jyBHw6lyZXIgbGVzIGNoYW50aWVycw0KDQojIyMgQ3LDqWVyIHVuIGNoYW50aWVyDQoxLiBPbmdsZXQgKipDaGFudGllcnMqKiDihpIgYm91dG9uICoq77yLKiogZW4gaGF1dCDDoCBkcm9pdGUNCjIuIFJlbXBsaXNzZXogOiBub20sIGNsaWVudCwgYWRyZXNzZSwgdHlwZSBkZSB0cmF2YXV4LCBkYXRlcw0KMy4gQXBwdXlleiAqKkNyw6llciBsZSBjaGFudGllcioqDQoNCiMjIyBNb2RpZmllciB1biBjaGFudGllcg0KLSBPdXZyZXogbGUgY2hhbnRpZXIg4oaSIG9uZ2xldCAqKuKEue+4jyBJbmZvcyoqIOKGkiBib3V0b24gKirinI/vuI8gTW9kaWZpZXIqKg0KLSBNZXR0ZXogw6Agam91ciBsZSAqKnBvdXJjZW50YWdlIGQnYXZhbmNlbWVudCoqIGF2ZWMgbGUgY3Vyc2V1cg0KLSBDaGFuZ2V6IGxlICoqc3RhdHV0KiogOiBFbiBjb3VycyAvIEVuIGF0dGVudGUgLyBTdXNwZW5kdSAvIFRlcm1pbsOpDQoNCi0tLQ0KDQojIyDwn5O4IFBob3Rvcw0KDQotIEJvdXRvbiAqKvCfk7cqKiDihpIgc8OpbGVjdGlvbm5leiBsZSBjaGFudGllciwgbGEgc3VyZmFjZSwgYWpvdXRleiB1bmUgbm90ZQ0KLSBEYW5zIHVuIGNoYW50aWVyLCBvbmdsZXQgKirwn5O4IFBob3RvcyoqIDogdG91dGVzIGxlcyBwaG90b3MgZ3JvdXDDqWVzIHBhciBqb3VyDQotIEFwcHV5ZXogc3VyIHVuZSBwaG90byDihpIgKiphZ3JhbmRpcioqICsgKirirIfvuI8gdMOpbMOpY2hhcmdlcioqDQotIFZvdXMgcG91dmV6ICoqc3VwcHJpbWVyKiogdW5lIHBob3RvIHNpIGJlc29pbg0KDQotLS0NCg0KIyMg4pqg77iPIFNpZ25hbGVyIHVuIHByb2Jsw6htZQ0KDQoxLiBEYW5zIGxlIGNoYW50aWVyIOKGkiBvbmdsZXQgKirimqDvuI8gUHJvYmzDqG1lcyoqIOKGkiBib3V0b24gKiorIFNpZ25hbGVyKioNCjIuIFRpdHJlLCBkZXNjcmlwdGlvbiwgc8OpdsOpcml0w6kgKEZhaWJsZSAvIE1veWVuIC8gw4lsZXbDqSAvIENyaXRpcXVlKQ0KMy4gTCdhZG1pbmlzdHJhdGV1ciByZcOnb2l0IHVuZSAqKm5vdGlmaWNhdGlvbiBwYXIgZW1haWwqKg0KNC4gU3VpdmV6IGxlIHN0YXR1dCA6IE91dmVydCAvIEVuIGNvdXJzIC8gUsOpc29sdQ0KDQotLS0NCg0KIyMg8J+ThCBFeHBvcnRlciB1biByYXBwb3J0DQoNCi0gRGFucyB1biBjaGFudGllciDihpIgb25nbGV0ICoq4oS577iPIEluZm9zKiog4oaSICoq8J+ThCBSYXBwb3J0KioNCi0gR8OpbsOocmUgdW4gZmljaGllciBIVE1MIGF2ZWMgdG91dGVzIGxlcyBwaG90b3MgZ3JvdXDDqWVzIHBhciBqb3VyDQotIEltcHJpbWFibGUgb3UgcGFydGFnZWFibGUNCg0KLS0tDQoNCiMjIPCfk4sgVMOiY2hlcw0KDQotIFN1ciBsJyoqQWNjdWVpbCoqLCBham91dGV6IHZvcyB0w6JjaGVzIGR1IGpvdXINCi0gRWxsZXMgc29udCB2aXNpYmxlcyBwYXIgbCdhZG1pbmlzdHJhdGV1cg0KDQotLS0NCg0KIyMg8J+kliBBc3Npc3RhbnQgSUENCg0KLSBPbmdsZXQgKipJQSoqIDogcG9zZXogdm9zIHF1ZXN0aW9ucyBzdXIgbGVzIGNoYW50aWVycw0KLSBSYWNjb3VyY2lzIDogIlLDqXN1bcOpIGRlcyBjaGFudGllcnMiLCAiUXVpIGEgcHJpcyBkZXMgcGhvdG9zIGF1am91cmQnaHVpID8iDQoNCi0tLQ0KDQoqUsOpbm9UcmFjZSBQcm8gdjIuMCDigJQgR3VpZGUgQ2hlZiBkZSBjaGFudGllcioNCg==',
+  conducteur: 'IyDwn5qXIEd1aWRlIENvbmR1Y3RldXIgZGUgVHJhdmF1eCDigJQgUsOpbm9UcmFjZSBQcm8NCg0KKipSw7RsZSA6IENvbmR1Y3RldXIgZGUgdHJhdmF1eCDwn5qXKioNClZvdXMgc3VwZXJ2aXNleiBsJ2Vuc2VtYmxlIGRlcyBjaGFudGllcnMsIGNvb3Jkb25uZXogbGVzIMOpcXVpcGVzIGV0IHN1aXZleiBsYSBwZXJmb3JtYW5jZSBnbG9iYWxlLg0KDQotLS0NCg0KIyMg8J+PoCBUYWJsZWF1IGRlIGJvcmQgKEFjY3VlaWwpDQoNCkTDqHMgbGEgY29ubmV4aW9uLCB2b3VzIHZveWV6IDoNCi0gKipDaGFudGllcnMgYWN0aWZzKiog4oaSIGNsaXF1ZXogcG91ciBhbGxlciDDoCBsYSBsaXN0ZSBkZXMgY2hhbnRpZXJzDQotICoqUGhvdG9zIGF1am91cmQnaHVpKiog4oaSIGNsaXF1ZXogcG91ciB2b2lyIGxlIGNoYW50aWVyIGxlIHBsdXMgYWN0aWYNCi0gKipBY3RpZnMgYXVqb3VyZCdodWkqKiDihpIgY2xpcXVleiBwb3VyIHZvaXIgbGUgcGFuZWwgZGUgc3VwZXJ2aXNpb24NCi0gKipDZXR0ZSBzZW1haW5lKiog4oaSIGNsaXF1ZXogcG91ciBhbGxlciBhdXggY2hhbnRpZXJzDQoNCi0tLQ0KDQojIyDwn4+X77iPIEdlc3Rpb24gZGVzIGNoYW50aWVycw0KDQotICoqQ3LDqWVyKiogdW4gY2hhbnRpZXIgOiBib3V0b24g77yLIGRhbnMgbCdvbmdsZXQgQ2hhbnRpZXJzDQotICoqTW9kaWZpZXIqKiA6IGF2YW5jZW1lbnQsIHN0YXR1dCwgZGF0ZXMsIG5vdGVzDQotICoqU3VwcHJpbWVyKiogdW4gY2hhbnRpZXIgKGF0dGVudGlvbiA6IHN1cHByaW1lIGF1c3NpIHRvdXRlcyBzZXMgcGhvdG9zKQ0KLSAqKkV4cG9ydGVyKiogdW4gcmFwcG9ydCBIVE1MIGNvbXBsZXQgcGFyIGNoYW50aWVyDQoNCi0tLQ0KDQojIyDwn5O4IFN1cGVydmlzaW9uIGRlcyBwaG90b3MNCg0KLSBBY2PDqWRleiDDoCAqKmNoYXF1ZSBjaGFudGllcioqIHBvdXIgdm9pciB0b3V0ZXMgbGVzIHBob3RvcyBwYXIgam91cg0KLSAqKkxpZ2h0Ym94KiogOiB2b2lyIGVuIGdyYW5kLCB0w6lsw6ljaGFyZ2VyLCBzdXBwcmltZXINCi0gKipBY3Rpdml0w6kgcsOpY2VudGUqKiBzdXIgbCdBY2N1ZWlsIDogY2xpcXVleiBzdXIgY2hhcXVlIGxpZ25lIHBvdXIgdm9pciBsYSBwaG90byBkaXJlY3RlbWVudA0KDQotLS0NCg0KIyMg4pqg77iPIFN1aXZpIGRlcyBwcm9ibMOobWVzDQoNCi0gRGFucyBjaGFxdWUgY2hhbnRpZXIg4oaSIG9uZ2xldCAqKuKaoO+4jyBQcm9ibMOobWVzKioNCi0gVm9pciB0b3VzIGxlcyBwcm9ibMOobWVzIHNpZ25hbMOpcyA6IHRpdHJlLCBzw6l2w6lyaXTDqSwgc3RhdHV0LCBkYXRlDQotIExlcyB0ZWNobmljaWVucyBldCBjaGVmcyBub3RpZmllbnQgbCdhZG1pbiBwYXIgZW1haWwgbG9ycyBkZSBsYSBjcsOpYXRpb24NCg0KLS0tDQoNCiMjIPCfpJYgQXNzaXN0YW50IElBDQoNCkwnYXNzaXN0YW50IGRpc3Bvc2UgZGUgdG91dGVzIGxlcyBkb25uw6llcyBlbiB0ZW1wcyByw6llbCA6DQotICJRdWkgYSBwcmlzIGRlcyBwaG90b3MgYXVqb3VyZCdodWkgPyINCi0gIkNoYW50aWVyIGxlIHBsdXMgYXZhbmPDqSA/Ig0KLSAiUHJvYmzDqG1lcyBub24gcsOpc29sdXMgPyINCi0gIkfDqW7DqXJlciByYXBwb3J0IGhlYmRvIg0KDQotLS0NCg0KIyMg8J+TiyBUw6JjaGVzDQoNCi0gVm9zIHTDomNoZXMgcGVyc29ubmVsbGVzIHN1ciBsJyoqQWNjdWVpbCoqDQotIEwnYWRtaW4gcGV1dCB2b2lyIGxlcyB0w6JjaGVzIGRlIHRvdXRlIGwnw6lxdWlwZQ0KDQotLS0NCg0KIyMg8J+RpCBQcm9maWwNCg0KLSBNb2RpZmlleiB2b3MgaW5mb3JtYXRpb25zIHBlcnNvbm5lbGxlcw0KLSBDb25uZWN0ZXogKipHb29nbGUgRHJpdmUqKiBwb3VyIGxhIHNhdXZlZ2FyZGUgYXV0b21hdGlxdWUNCi0gRXhwb3J0ZXogLyBpbXBvcnRleiBsZXMgZG9ubsOpZXMgZW4gSlNPTg0KDQotLS0NCg0KKlLDqW5vVHJhY2UgUHJvIHYyLjAg4oCUIEd1aWRlIENvbmR1Y3RldXIgZGUgdHJhdmF1eCoNCg==',
+  dirigeant: 'IyDwn5GUIEd1aWRlIERpcmlnZWFudCDigJQgUsOpbm9UcmFjZSBQcm8NCg0KKipSw7RsZSA6IERpcmlnZWFudCDwn5GUKioNClZvdXMgYXZleiB1bmUgdmlzaW9uIGdsb2JhbGUgZGUgdG91cyBsZXMgY2hhbnRpZXJzLCBkZXMgw6lxdWlwZXMgZXQgZGVzIHBlcmZvcm1hbmNlcy4gVm91cyBzdXBlcnZpc2V6IHNhbnMgZ8OpcmVyIGxlcyBjb21wdGVzIHV0aWxpc2F0ZXVycyAocsOpc2VydsOpIGF1IFN1cGVyIEFkbWluKS4NCg0KLS0tDQoNCiMjIPCfj6AgVGFibGVhdSBkZSBib3JkIChBY2N1ZWlsKQ0KDQpEw6hzIGxhIGNvbm5leGlvbiwgdm91cyB2b3lleiBsZXMgaW5kaWNhdGV1cnMgY2zDqXMgOg0KLSAqKkNoYW50aWVycyBhY3RpZnMqKiDihpIgY2xpcXVleiBwb3VyIGFsbGVyIMOgIGxhIGxpc3RlIGRlcyBjaGFudGllcnMNCi0gKipQaG90b3MgYXVqb3VyZCdodWkqKiDihpIgY2xpcXVleiBwb3VyIHZvaXIgbGUgY2hhbnRpZXIgbGUgcGx1cyBhY3RpZiBkdSBqb3VyDQotICoqQWN0aWZzIGF1am91cmQnaHVpKiog4oaSIGNsaXF1ZXogcG91ciBhY2PDqWRlciBhdSBwYW5lbCBkZSBzdXBlcnZpc2lvbg0KLSAqKkNldHRlIHNlbWFpbmUqKiDihpIgY2xpcXVleiBwb3VyIGFsbGVyIGF1eCBjaGFudGllcnMNCg0KTGVzICoqdMOiY2hlcyBkdSBqb3VyKiogcydhZmZpY2hlbnQganVzdGUgZW4tZGVzc291cyDigJQgYWpvdXRleiwgY29jaGV6LCBzdXBwcmltZXouDQoNCi0tLQ0KDQojIyDwn4+X77iPIEdlc3Rpb24gZGVzIGNoYW50aWVycw0KDQotICoqQ3LDqWVyKiogdW4gY2hhbnRpZXIgOiBib3V0b24gKirvvIsqKiBkYW5zIGwnb25nbGV0IENoYW50aWVycw0KLSAqKk1vZGlmaWVyKiogOiBhdmFuY2VtZW50ICglKSwgc3RhdHV0LCBkYXRlcywgbm90ZXMNCi0gKipTdXBwcmltZXIqKiB1biBjaGFudGllciAoYXR0ZW50aW9uIDogc3VwcHJpbWUgdG91dGVzIHNlcyBwaG90b3MpDQotICoqRXhwb3J0ZXIqKiB1biByYXBwb3J0IEhUTUwgY29tcGxldCBwYXIgY2hhbnRpZXIgKG9uZ2xldCDihLnvuI8gSW5mb3Mg4oaSIPCfk4QgUmFwcG9ydCkNCg0KLS0tDQoNCiMjIPCfk7ggU3VwZXJ2aXNpb24gZGVzIHBob3Rvcw0KDQotIE91dnJleiB1biBjaGFudGllciDihpIgb25nbGV0ICoq8J+TuCBQaG90b3MqKiA6IHRvdXRlcyBsZXMgcGhvdG9zIGdyb3Vww6llcyBwYXIgam91cg0KLSBDbGlxdWV6IHN1ciB1bmUgcGhvdG8g4oaSICoqTGlnaHRib3gqKiA6IHZvaXIgZW4gZ3JhbmQsICoqdMOpbMOpY2hhcmdlciDirIcqKiwgc3VwcHJpbWVyDQotICoqQWN0aXZpdMOpIHLDqWNlbnRlKiogc3VyIGwnQWNjdWVpbCA6IGNsaXF1ZXogc3VyIGNoYXF1ZSBsaWduZSBwb3VyIHZvaXIgbGEgcGhvdG8gZGlyZWN0ZW1lbnQNCg0KLS0tDQoNCiMjIOKaoO+4jyBTdWl2aSBkZXMgcHJvYmzDqG1lcw0KDQotIERhbnMgY2hhcXVlIGNoYW50aWVyIOKGkiBvbmdsZXQgKirimqDvuI8gUHJvYmzDqG1lcyoqDQotIFZvaXIgdG91cyBsZXMgcHJvYmzDqG1lcyBzaWduYWzDqXMgOiB0aXRyZSwgc8OpdsOpcml0w6kgKEZhaWJsZSAvIE1veWVuIC8gw4lsZXbDqSAvIENyaXRpcXVlKSwgc3RhdHV0LCBkYXRlDQotIFLDqXNvbHZleiBkaXJlY3RlbWVudCA6ICoq4pyTIE1hcnF1ZXIgY29tbWUgcsOpc29sdSoqDQoNCi0tLQ0KDQojIyDwn5GlIFBhbmVsIGRlIHN1cGVydmlzaW9uIChQcm9maWwg4oaSIFBhbmVsIEFkbWluKQ0KDQpFbiB0YW50IHF1ZSBEaXJpZ2VhbnQgdm91cyBhY2PDqWRleiBhdSBwYW5lbCBkZSBzdXBlcnZpc2lvbiA6DQotICoqVnVlIGQnZW5zZW1ibGUqKiA6IHN0YXRzIGdsb2JhbGVzLCBhbGVydGVzIChvcMOpcmF0ZXVycyBzYW5zIHBob3RvIGF1am91cmQnaHVpKQ0KLSAqKlRyYcOnYWJpbGl0w6kqKiA6IGhpc3RvcmlxdWUgZGVzIDUwIGRlcm5pw6hyZXMgcGhvdG9zDQotICoq4pqg77iPIFByb2Jsw6htZXMqKiA6IHRvdXMgbGVzIHByb2Jsw6htZXMgYXZlYyBmaWx0cmVzIGV0IHLDqXNvbHV0aW9uDQotICoq8J+TiyBUw6JjaGVzKiogOiB0b3V0ZXMgbGVzIHTDomNoZXMgZGUgbCfDqXF1aXBlLCBncm91cMOpZXMgcGFyIHV0aWxpc2F0ZXVyDQotICoqSm91cm5hbCBkJ2F1ZGl0KiogOiAxMDAgZGVybmllcnMgw6l2w6luZW1lbnRzIChjb25uZXhpb25zLCBjcsOpYXRpb25zLi4uKQ0KDQo+IExhIGdlc3Rpb24gZGVzIGNvbXB0ZXMgdXRpbGlzYXRldXJzIChjcsOpZXIvc3VwcHJpbWVyKSBlc3QgcsOpc2VydsOpZSBhdSBTdXBlciBBZG1pbi4NCg0KLS0tDQoNCiMjIPCfpJYgQXNzaXN0YW50IElBDQoNCkwnYXNzaXN0YW50IGRpc3Bvc2UgZGUgdG91dGVzIGxlcyBkb25uw6llcyBlbiB0ZW1wcyByw6llbCA6DQotICoiUXVpIGEgcHJpcyBkZXMgcGhvdG9zIGF1am91cmQnaHVpID8iKg0KLSAqIkNoYW50aWVyIGxlIHBsdXMgYXZhbmPDqSA/IioNCi0gKiJQcm9ibMOobWVzIG5vbiByw6lzb2x1cyA/IioNCi0gKiJHw6luw6lyZXIgcmFwcG9ydCBoZWJkb21hZGFpcmUiKg0KLSAqIlLDqXN1bcOpIGRlIGxhIHNlbWFpbmUiKg0KDQotLS0NCg0KIyMg8J+TiyBUw6JjaGVzDQoNCi0gVm9zIHTDomNoZXMgcGVyc29ubmVsbGVzIHN1ciBsJyoqQWNjdWVpbCoqDQotIExlIHBhbmVsIGFkbWluIGFmZmljaGUgbGVzIHTDomNoZXMgZGUgdG91dGUgbCfDqXF1aXBlDQoNCi0tLQ0KDQojIyDimIHvuI8gU2F1dmVnYXJkZQ0KDQotICoqR29vZ2xlIERyaXZlKiogOiBjb25uZWN0ZXogdm90cmUgY29tcHRlIHBvdXIgbGEgc2F1dmVnYXJkZSBhdXRvbWF0aXF1ZSBjaGlmZnLDqWUNCiAgLSBOw6ljZXNzaXRlIHVuIENsaWVudCBJRCBPQXV0aCAyLjAgKGZvcm1hdCA6IGB4eHh4eC5hcHBzLmdvb2dsZXVzZXJjb250ZW50LmNvbWApDQotICoqRXhwb3J0IEpTT04qKiA6IHNhdXZlZ2FyZGUgY29tcGzDqHRlIHTDqWzDqWNoYXJnZWFibGUgw6AgdG91dCBtb21lbnQNCi0gKipJbXBvcnQgSlNPTioqIDogcmVzdGF1cmF0aW9uIGRlcHVpcyB1biBmaWNoaWVyIGRlIHNhdXZlZ2FyZGUNCg0KLS0tDQoNCiMjIPCfkaQgUHJvZmlsDQoNCi0gTW9kaWZpZXogdm9zIGluZm9ybWF0aW9ucyBwZXJzb25uZWxsZXMgZXQgbW90IGRlIHBhc3NlDQotIFJlbnNlaWduZXogdm90cmUgKiplbWFpbCoqIChuw6ljZXNzYWlyZSBwb3VyIHJlY2V2b2lyIGxlcyBub3RpZmljYXRpb25zIGRlIHByb2Jsw6htZXMpDQotIEFjY8OpZGV6IMOgIGNlIGd1aWRlIMOgIHRvdXQgbW9tZW50IDogUHJvZmlsIOKGkiBHdWlkZSBkJ3V0aWxpc2F0aW9uDQoNCi0tLQ0KDQoqUsOpbm9UcmFjZSBQcm8gdjIuMCDigJQgR3VpZGUgRGlyaWdlYW50Kg0K'
+};
+function _decodeGuide(b64) {
+  try { return new TextDecoder().decode(Uint8Array.from(atob(b64), c => c.charCodeAt(0))); } catch { return b64; }
+}
+
+// ═══ TYPES DE DÉSORDRES ═══
+const DESORDRES_TYPES = {
+  structurel: { label:'Structurel', icon:'🧱', color:'#DC2626',
+    types:['Fissure','Affaissement','Déformation','Effritement','Décollement','Fissure de façade','Autre'] },
+  visuel:     { label:'Visuel', icon:'🎨', color:'#7C3AED',
+    types:['Défaut de peinture','Traces d\'humidité','Revêtement dégradé','Encrassement','Moisissures','Autre'] },
+  electrique: { label:'Électrique', icon:'⚡', color:'#D97706',
+    types:['Court-circuit','Câblage endommagé','Prise défectueuse','Éclairage défaillant','Disjoncteur','Autre'] },
+  plomberie:  { label:'Plomberie', icon:'💧', color:'#0891B2',
+    types:['Fuite d\'eau','Canalisation bouchée','Robinetterie défectueuse','Infiltration','Condensation','Autre'] },
+  autre:      { label:'Autre', icon:'📋', color:'#64748B',
+    types:['Non catégorisé','Désordre acoustique','Isolation thermique','Menuiserie','Autre'] }
+};
+
 // ═══ GROQ KEY POOL — chargées depuis Google Apps Script (clés absentes du source) ═══
 const GROQ_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzVFuPw5tzYHYbyW3a4A7-KFHxhehKDXrrC0H1KZVNKuDl6CDAeAs0YyW2O4AOkVJ54/exec'; // ← coller l'URL après déploiement
 let GROQ_POOL = [];
@@ -189,6 +215,8 @@ async function dbLoad() {
   if (!db.pendingRequests) db.pendingRequests = [];
   if (!db.auditLog)       db.auditLog = [];
   if (!db.tasks)          db.tasks = [];
+  if (!db.tasksHistory)   db.tasksHistory = [];
+  if (!db.desordres)      db.desordres = [];
   if (!db.settings)       db.settings = { companyName: 'Mon Entreprise', notifTime: '16:30' };
   // Seeding : un seul compte admin, mot de passe en PBKDF2
   if (!db.users.length) {
@@ -1108,6 +1136,7 @@ function renderChantier(id) {
 
   const photos = db.photos.filter(p => p.chantierId === id);
   const issues = db.issues.filter(i => i.chantierId === id);
+  const desordres = (db.desordres || []).filter(d => d.chantierId === id);
   const byDay = groupByDay(photos);
   const pct = c.progress || 0;
 
@@ -1124,16 +1153,41 @@ function renderChantier(id) {
       </div>
     </div>`).join('') : `<div class="empty"><div class="empty-icon">📸</div><div class="empty-title">Aucune photo</div><div class="empty-text">Prenez des photos avec le bouton caméra</div></div>`;
 
+  const _sevC = {low:'badge-gray',medium:'badge-orange',high:'badge-red',critical:'badge-red'};
+  const _sevL = {low:'Faible',medium:'Moyen',high:'Élevé',critical:'Critique'};
+  const _stC  = {open:'badge-red',in_progress:'badge-blue',resolved:'badge-green'};
+  const _stL  = {open:'Ouvert',in_progress:'En cours',resolved:'Résolu'};
   const issuesHtml = issues.length ? issues.map(i => `
     <div class="issue-item">
+      ${i.photo ? `<img src="${i.photo}" style="width:100%;max-height:160px;object-fit:cover;border-radius:8px;margin-bottom:8px;cursor:pointer" onclick="openImgModal('${i.id}','issue')">` : ''}
       <div class="issue-title">${i.title}</div>
-      <div class="issue-desc">${i.description || ''}</div>
+      ${i.description ? `<div class="issue-desc">${i.description}</div>` : ''}
       <div class="issue-meta">
-        <span class="badge ${i.severity === 'high' || i.severity === 'critical' ? 'badge-red' : i.severity === 'medium' ? 'badge-orange' : 'badge-gray'}">${{low:'Faible',medium:'Moyen',high:'Élevé',critical:'Critique'}[i.severity]||i.severity}</span>
-        <span class="badge ${i.status === 'resolved' ? 'badge-green' : i.status === 'in_progress' ? 'badge-blue' : 'badge-gray'}">${{open:'Ouvert',in_progress:'En cours',resolved:'Résolu'}[i.status]||i.status}</span>
+        <span class="badge ${_sevC[i.severity]||'badge-gray'}">${_sevL[i.severity]||i.severity}</span>
+        <span class="badge ${_stC[i.status]||'badge-gray'}">${_stL[i.status]||i.status}</span>
         <span style="font-size:11px;color:var(--text3)">${formatTime(i.createdAt)}</span>
       </div>
     </div>`).join('') : `<div class="empty"><div class="empty-icon">✅</div><div class="empty-title">Aucun problème signalé</div></div>`;
+
+  const desordresHtml = desordres.length ? desordres.map(d => {
+    const cat = DESORDRES_TYPES[d.category] || DESORDRES_TYPES.autre;
+    return `<div class="issue-item" style="border-left:3px solid ${cat.color}">
+      ${d.photos && d.photos.length ? `<img src="${d.photos[0]}" style="width:100%;max-height:160px;object-fit:cover;border-radius:8px;margin-bottom:8px">` : ''}
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+        <span style="font-size:18px">${cat.icon}</span>
+        <span style="font-size:11px;font-weight:700;color:${cat.color};text-transform:uppercase">${cat.label}</span>
+        <span style="font-size:11px;color:var(--text3)">— ${d.type || ''}</span>
+      </div>
+      <div class="issue-title">${d.title}</div>
+      ${d.description ? `<div class="issue-desc">${d.description}</div>` : ''}
+      <div class="issue-meta">
+        <span class="badge ${_sevC[d.severity]||'badge-gray'}">${_sevL[d.severity]||d.severity}</span>
+        <span class="badge ${_stC[d.status]||'badge-gray'}">${_stL[d.status]||d.status}</span>
+        <span style="font-size:11px;color:var(--text3)">${timeAgo(d.createdAt)}</span>
+      </div>
+      ${d.status !== 'resolved' && can(2) ? `<button onclick="resolveDesordre('${d.id}')" style="margin-top:8px;background:var(--green-l);color:var(--green);border:1.5px solid var(--green-m);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;width:100%">✓ Marquer résolu</button>` : ''}
+    </div>`;
+  }).join('') : `<div class="empty"><div class="empty-icon">🔍</div><div class="empty-title">Aucun désordre signalé</div></div>`;
 
   el('chantierBody').innerHTML = `
     <div class="chantier-hero">
@@ -1159,13 +1213,18 @@ function renderChantier(id) {
     </div>
     <div class="tabs" style="margin-bottom:16px">
       <button class="tab active" onclick="switchTab(this,'tab-photos')">📸 Photos (${photos.length})</button>
-      <button class="tab" onclick="switchTab(this,'tab-issues')">⚠️ Problèmes (${issues.length})</button>
+      <button class="tab" onclick="switchTab(this,'tab-issues')">⚠️ Problèmes (${issues.filter(i=>i.status!=='resolved').length})</button>
+      <button class="tab" onclick="switchTab(this,'tab-desordres')">🔍 Désordres (${desordres.length})</button>
       <button class="tab" onclick="switchTab(this,'tab-info')">ℹ️ Infos</button>
     </div>
     <div id="tab-photos">${photosHtml}</div>
     <div id="tab-issues" style="display:none">
       ${can(2) ? `<button class="btn btn-secondary btn-sm" style="margin-bottom:12px" onclick="showAddIssue('${id}')">+ Signaler un problème</button>` : ''}
       ${issuesHtml}
+    </div>
+    <div id="tab-desordres" style="display:none">
+      ${can(2) ? `<button class="btn btn-secondary btn-sm" style="margin-bottom:12px" onclick="showAddDesordre('${id}')">+ Signaler un désordre</button>` : ''}
+      ${desordresHtml}
     </div>
     <div id="tab-info" style="display:none">
       <div class="card">
@@ -1199,7 +1258,7 @@ function infoRow(label, value) {
 function switchTab(btn, tabId) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
-  ['tab-photos','tab-issues','tab-info'].forEach(id => {
+  ['tab-photos','tab-issues','tab-desordres','tab-info'].forEach(id => {
     const el2 = document.getElementById(id);
     if (el2) el2.style.display = id === tabId ? '' : 'none';
   });
@@ -1373,6 +1432,7 @@ function renderAdmin() {
       <button class="tab" onclick="switchAdminTab(this,'at-audit')">🔍 Journal</button>
       <button class="tab" onclick="switchAdminTab(this,'at-tasks')">📋 Tâches</button>
       <button class="tab" onclick="switchAdminTab(this,'at-issues')">⚠️ Problèmes${db.issues.filter(i=>i.status==='open').length ? `<span style="background:var(--red);color:white;border-radius:50px;padding:1px 6px;font-size:10px;margin-left:4px">${db.issues.filter(i=>i.status==='open').length}</span>` : ''}</button>
+      <button class="tab" onclick="switchAdminTab(this,'at-desordres')">🔍 Désordres${(db.desordres||[]).filter(d=>d.status!=='resolved').length ? `<span style="background:var(--red);color:white;border-radius:50px;padding:1px 6px;font-size:10px;margin-left:4px">${(db.desordres||[]).filter(d=>d.status!=='resolved').length}</span>` : ''}</button>
     </div>
 
     <div id="at-overview">
@@ -1492,6 +1552,53 @@ function renderAdmin() {
         </div>
         <input type="file" id="importInputAdmin" accept=".json" style="display:none" onchange="importJson(this.files[0])">
       </div>
+      ${can(5) ? `<div class="card" style="margin-top:12px;border-color:var(--red)">
+        <div class="card-title" style="color:var(--red)">🗑️ Réinitialisation complète</div>
+        <div style="font-size:13px;color:var(--text2);margin:8px 0 12px">
+          Efface <strong>toutes les données</strong> (chantiers, photos, utilisateurs, tâches, désordres…) en conservant uniquement le compte administrateur et son mot de passe.
+        </div>
+        <button class="btn btn-danger btn-sm" onclick="factoryReset()">⚠️ Réinitialiser l'application</button>
+      </div>` : ''}
+    </div>
+
+    <div id="at-desordres" style="display:none">
+      ${(() => {
+        const allDesordres = (db.desordres || []).slice().sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+        if (!allDesordres.length) return '<div class="empty"><div class="empty-icon">🔍</div><div class="empty-title">Aucun désordre enregistré</div></div>';
+        return `
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+            ${Object.entries(DESORDRES_TYPES).map(([k,v])=> {
+              const count = allDesordres.filter(d=>d.category===k).length;
+              return count ? `<span style="background:${v.color}22;color:${v.color};border:1px solid ${v.color}44;border-radius:20px;padding:3px 10px;font-size:12px;font-weight:700">${v.icon} ${v.label} (${count})</span>` : '';
+            }).join('')}
+          </div>
+          ${allDesordres.map(d => {
+            const c = db.chantiers.find(x=>x.id===d.chantierId);
+            const cat = DESORDRES_TYPES[d.category]||DESORDRES_TYPES.autre;
+            const _sevC2={low:'badge-gray',medium:'badge-orange',high:'badge-red',critical:'badge-red'};
+            const _sevL2={low:'Faible',medium:'Moyen',high:'Élevé',critical:'Critique'};
+            const _stC2={open:'badge-red',in_progress:'badge-blue',resolved:'badge-green'};
+            const _stL2={open:'Ouvert',in_progress:'En cours',resolved:'Résolu'};
+            return `<div class="card" style="margin-bottom:10px;border-left:3px solid ${cat.color}">
+              ${d.photos&&d.photos.length ? `<img src="${d.photos[0]}" style="width:100%;max-height:140px;object-fit:cover;border-radius:8px;margin-bottom:8px">` : ''}
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px">
+                <div>
+                  <div style="font-size:11px;font-weight:700;color:${cat.color};text-transform:uppercase;margin-bottom:2px">${cat.icon} ${cat.label} — ${d.type||''}</div>
+                  <div style="font-size:15px;font-weight:700">${d.title}</div>
+                  ${d.description ? `<div style="font-size:12px;color:var(--text2);margin-top:2px">${d.description}</div>` : ''}
+                </div>
+                <span class="badge ${_stC2[d.status]||'badge-gray'}" style="flex-shrink:0">${_stL2[d.status]||d.status}</span>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center">
+                <span class="badge ${_sevC2[d.severity]||'badge-gray'}">${_sevL2[d.severity]||d.severity}</span>
+                <span style="font-size:11px;color:var(--text2)">🏗️ ${c?.name||'?'}</span>
+                <span style="font-size:11px;color:var(--text2)">👤 ${d.createdByName||getUserName(d.createdBy)}</span>
+                <span style="font-size:11px;color:var(--text3)">${timeAgo(d.createdAt)}</span>
+              </div>
+              ${d.status!=='resolved' ? `<button onclick="resolveDesordreAdmin('${d.id}')" style="margin-top:10px;background:var(--green-l);color:var(--green);border:1.5px solid var(--green-m);border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;width:100%">✓ Marquer comme résolu</button>` : ''}
+            </div>`;
+          }).join('')}`;
+      })()}
     </div>
 
     <div id="at-audit" style="display:none">
@@ -1528,6 +1635,7 @@ function renderAdmin() {
         return allIssues.map(i => {
           const c = db.chantiers.find(x => x.id === i.chantierId);
           return `<div class="card" style="margin-bottom:10px">
+            ${i.photo ? `<img src="${i.photo}" style="width:100%;max-height:140px;object-fit:cover;border-radius:8px;margin-bottom:8px;cursor:pointer" onclick="openImgModal('${i.id}','issue')">` : ''}
             <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px">
               <div style="flex:1">
                 <div style="font-size:15px;font-weight:700">${i.title}</div>
@@ -1584,7 +1692,7 @@ function renderAdmin() {
 function switchAdminTab(btn, id) {
   document.querySelectorAll('.admin-tabs .tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
-  ['at-overview','at-users','at-requests','at-trace','at-backup','at-audit','at-tasks','at-issues'].forEach(s => {
+  ['at-overview','at-users','at-requests','at-trace','at-backup','at-audit','at-tasks','at-issues','at-desordres'].forEach(s => {
     const d = document.getElementById(s);
     if (d) d.style.display = s === id ? '' : 'none';
   });
@@ -1711,25 +1819,44 @@ function deleteChantier(id) {
 }
 function showAddIssue(chantierId) {
   openModal(`
-    <div class="modal-title">Signaler un problème</div>
+    <div class="modal-title">⚠️ Signaler un problème</div>
     <div class="field"><label>Titre</label><input id="i-title" type="text" placeholder="Fissure mur, Humidité, Mauvais calfeutrage..."></div>
-    <div class="field"><label>Description</label><textarea id="i-desc" placeholder="Détails..."></textarea></div>
+    <div class="field"><label>Description</label><textarea id="i-desc" placeholder="Détails du problème..."></textarea></div>
     <div class="field"><label>Sévérité</label>
       <select id="i-sev"><option value="low">Faible</option><option value="medium">Moyen</option><option value="high" selected>Élevé</option><option value="critical">Critique</option></select>
     </div>
-    <button class="btn btn-danger" onclick="saveIssue('${chantierId}')">Signaler</button>
+    <div class="field">
+      <label>Photo (optionnelle)</label>
+      <button type="button" onclick="el('i-photo').click()" style="width:100%;background:var(--bg3);border:1.5px dashed var(--border);border-radius:10px;padding:12px;font-size:13px;color:var(--text2);cursor:pointer">📷 Joindre une photo</button>
+      <input type="file" id="i-photo" accept="image/*" style="display:none" onchange="previewIssuePhoto(this)">
+      <div id="i-photo-preview" style="margin-top:8px"></div>
+    </div>
+    <button class="btn btn-danger" onclick="saveIssue('${chantierId}')">⚠️ Signaler</button>
   `);
+}
+function previewIssuePhoto(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const preview = el('i-photo-preview');
+    preview.innerHTML = `<img src="${e.target.result}" style="width:100%;max-height:140px;object-fit:cover;border-radius:8px">`;
+    preview.dataset.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
 }
 function saveIssue(chantierId) {
   const title = el('i-title')?.value.trim();
   if (!title) { toast('Saisissez un titre', 'warning'); return; }
   const reporter = me();
   const chantier = db.chantiers.find(x => x.id === chantierId);
+  const photoPreview = el('i-photo-preview');
   const issue = {
     id: uid(), chantierId, title,
     description: el('i-desc')?.value || '',
     severity: el('i-sev')?.value || 'high',
     status: 'open',
+    photo: photoPreview?.dataset?.src || null,
     createdBy: reporter.id, createdByName: reporter.name,
     createdAt: now()
   };
@@ -1998,28 +2125,25 @@ function saveCompany() {
 //   TÉLÉCHARGEMENT GUIDE
 // ═══════════════════════════════════════════
 function downloadGuide(role) {
-  const guideFiles = {
-    superadmin: 'GUIDE-ADMIN.md',
-    dirigeant:  'GUIDE-DIRIGEANT.md',
-    conducteur: 'GUIDE-CONDUCTEUR.md',
-    chef:       'GUIDE-CHEF-CHANTIER.md',
-    technicien: 'GUIDE-TECHNICIEN.md',
+  const names = {
+    superadmin: 'Guide-Administrateur.txt',
+    dirigeant:  'Guide-Dirigeant.txt',
+    conducteur: 'Guide-Conducteur.txt',
+    chef:       'Guide-Chef-Chantier.txt',
+    technicien: 'Guide-Technicien.txt',
   };
-  const filename = guideFiles[role] || 'GUIDE-TECHNICIEN.md';
-  const txtName  = filename.replace('.md', '.txt');
-  fetch('./' + filename)
-    .then(r => r.text())
-    .then(text => {
-      const blob = new Blob(['\uFEFF' + text], { type: 'text/plain;charset=utf-8' });
-      const url  = URL.createObjectURL(blob);
-      const a    = document.createElement('a');
-      a.href = url; a.download = txtName;
-      document.body.appendChild(a); a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    })
-    .catch(() => toast('Erreur téléchargement guide', 'error'));
-  toast('Guide téléchargé ✓', 'success');
+  const b64 = _GUIDE_DATA[role] || _GUIDE_DATA.technicien;
+  try {
+    const text    = _decodeGuide(b64);
+    const blob    = new Blob(['\uFEFF' + text], { type: 'text/plain;charset=utf-8' });
+    const url     = URL.createObjectURL(blob);
+    const a       = document.createElement('a');
+    a.href = url; a.download = names[role] || 'Guide.txt';
+    document.body.appendChild(a); a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast('Guide téléchargé ✓', 'success');
+  } catch { toast('Erreur téléchargement guide', 'error'); }
 }
 
 // ═══════════════════════════════════════════
@@ -2060,18 +2184,54 @@ function renderTaskList() {
   const list = el('taskList');
   if (!list) return;
   const myId = me()?.id;
-  // Chaque utilisateur voit ses propres tâches (rétrocompat : tâches sans createdBy visibles par tous)
   const myTasks = (db.tasks || []).filter(t => !t.createdBy || t.createdBy === myId);
   const tasks = [...myTasks].sort((a, b) => (a.done ? 1 : 0) - (b.done ? 1 : 0));
-  list.innerHTML = tasks.length
+  const historyCount = (db.tasksHistory || []).filter(t => !t.createdBy || t.createdBy === myId).length;
+  list.innerHTML = (tasks.length
     ? tasks.map(t => `
       <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
         <input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleTask('${t.id}')"
           style="width:18px;height:18px;cursor:pointer;accent-color:var(--blue);flex-shrink:0">
         <span style="flex:1;font-size:14px;${t.done ? 'text-decoration:line-through;color:var(--text3)' : ''}">${t.text}</span>
-        <button onclick="deleteTask('${t.id}')" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;padding:0 4px;line-height:1">✕</button>
+        <button onclick="deleteTask('${t.id}')" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;padding:0 4px;line-height:1" title="Supprimer">✕</button>
       </div>`).join('')
-    : '<div style="font-size:13px;color:var(--text3);padding:8px 0;text-align:center">Aucune tâche — ajoutez-en une ci-dessous</div>';
+    : '<div style="font-size:13px;color:var(--text3);padding:8px 0;text-align:center">Aucune tâche — ajoutez-en une ci-dessous</div>')
+    + (historyCount ? `<div style="margin-top:8px;text-align:center"><button onclick="showTaskHistory()" style="background:none;border:none;color:var(--text3);font-size:12px;cursor:pointer;text-decoration:underline">🕐 Historique des tâches supprimées (${historyCount})</button></div>` : '');
+}
+function showTaskHistory() {
+  const myId = me()?.id;
+  const hist = (db.tasksHistory || []).filter(t => !t.createdBy || t.createdBy === myId).slice(0,50);
+  if (!hist.length) { toast('Aucun historique', 'info'); return; }
+  openModal(`
+    <div class="modal-title">🕐 Historique des tâches</div>
+    <div style="max-height:360px;overflow-y:auto">
+      ${hist.map(t => `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
+        <span style="font-size:18px">${t.done ? '✅' : '⬜'}</span>
+        <div style="flex:1">
+          <div style="font-size:13px;${t.done ? 'text-decoration:line-through;color:var(--text3)' : ''}">${t.text}</div>
+          <div style="font-size:10px;color:var(--text3)">Supprimée ${timeAgo(t.deletedAt)}</div>
+        </div>
+        <button onclick="restoreTask('${t.id}')" style="background:var(--blue-l);border:none;color:var(--blue);border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer" title="Restaurer">↺</button>
+      </div>`).join('')}
+    </div>
+    ${can(5) ? `<button class="btn btn-danger btn-sm" style="margin-top:10px;width:100%" onclick="clearTaskHistory()">🗑 Vider l'historique</button>` : ''}
+  `);
+}
+function restoreTask(histId) {
+  const task = (db.tasksHistory || []).find(t => t.id === histId);
+  if (!task) return;
+  db.tasksHistory = db.tasksHistory.filter(t => t.id !== histId);
+  const { deletedAt, ...restored } = task;
+  db.tasks.unshift({ ...restored, done: false });
+  dbSave(); closeModal(); renderTaskList();
+  toast('Tâche restaurée ✓', 'success');
+}
+function clearTaskHistory() {
+  if (!confirm('Vider définitivement l\'historique des tâches supprimées ?')) return;
+  const myId = me()?.id;
+  db.tasksHistory = (db.tasksHistory || []).filter(t => t.createdBy && t.createdBy !== myId);
+  dbSave(); closeModal(); renderTaskList();
+  toast('Historique vidé', 'success');
 }
 function addTask() {
   const input = el('taskInput');
@@ -2090,6 +2250,12 @@ function toggleTask(id) {
 }
 function deleteTask(id) {
   if (!db.tasks) return;
+  const task = db.tasks.find(t => t.id === id);
+  if (task) {
+    if (!db.tasksHistory) db.tasksHistory = [];
+    db.tasksHistory.unshift({ ...task, deletedAt: now() });
+    if (db.tasksHistory.length > 200) db.tasksHistory = db.tasksHistory.slice(0,200);
+  }
   db.tasks = db.tasks.filter(t => t.id !== id);
   dbSave();
   renderTaskList();
@@ -2158,3 +2324,189 @@ document.addEventListener('DOMContentLoaded', () => {
   el('photoInput').addEventListener('change', e => handlePhotoImport(e.target.files));
   init();
 });
+
+// ═══════════════════════════════════════════
+//   RÉINITIALISATION COMPLÈTE (FACTORY RESET)
+// ═══════════════════════════════════════════
+async function factoryReset() {
+  if (!can(5)) return;
+  const confirm1 = confirm(
+    '⚠️ RÉINITIALISATION COMPLÈTE\n\n' +
+    'Cette action va effacer TOUTES les données :\n' +
+    '• Tous les chantiers et photos\n' +
+    '• Tous les utilisateurs (sauf admin)\n' +
+    '• Toutes les tâches et désordres\n' +
+    '• Tout l\'historique\n\n' +
+    'Seul le compte administrateur sera conservé.\n\n' +
+    'Êtes-vous sûr de vouloir continuer ?'
+  );
+  if (!confirm1) return;
+  const confirm2 = confirm(
+    '⚠️ DERNIÈRE CONFIRMATION\n\n' +
+    'Cette action est IRRÉVERSIBLE.\n' +
+    'Toutes les données seront perdues définitivement.\n\n' +
+    'Tapez OK pour confirmer la réinitialisation.'
+  );
+  if (!confirm2) return;
+
+  // Garder uniquement le compte admin actuel
+  const adminUser = db.users.find(u => u.role === 'superadmin' && u.id === 'sa_001')
+    || db.users.find(u => u.role === 'superadmin');
+
+  // Vider toutes les clés localStorage liées à l'app (welcome flags, lock keys)
+  const keysToRemove = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && (key.startsWith('rtp_welcome_') || key.startsWith('rtp_lk_'))) {
+      keysToRemove.push(key);
+    }
+  }
+  keysToRemove.forEach(k => localStorage.removeItem(k));
+
+  // Réinitialiser la base de données
+  db.users          = adminUser ? [adminUser] : [];
+  db.chantiers      = [];
+  db.photos         = [];
+  db.issues         = [];
+  db.pendingRequests = [];
+  db.auditLog       = [];
+  db.tasks          = [];
+  db.tasksHistory   = [];
+  db.desordres      = [];
+  db.settings       = { companyName: db.settings?.companyName || 'Mon Entreprise', notifTime: '16:30' };
+
+  // Si pas d'admin, recréer le compte par défaut
+  if (!db.users.length) {
+    const { hash, salt } = await hashPwdSafe('1234');
+    db.users.push({
+      id: 'sa_001', username: 'admin', name: 'Administrateur',
+      role: 'superadmin', passwordHash: hash, passwordSalt: salt,
+      email: null, mustChangePwd: true, createdAt: now(), lastLogin: null, avatarColor: '#7C3AED'
+    });
+  }
+
+  addAuditLog('factory_reset', 'Réinitialisation complète effectuée par ' + (me()?.name || 'Admin'));
+  await dbSave();
+  toast('✅ Application réinitialisée — seul le compte admin est conservé', 'success');
+  setTimeout(() => { navigate('dash'); renderAdmin(); }, 600);
+}
+
+// ═══════════════════════════════════════════
+//   DÉSORDRES
+// ═══════════════════════════════════════════
+function showAddDesordre(chantierId) {
+  const catOptions = Object.entries(DESORDRES_TYPES).map(([k,v]) =>
+    `<option value="${k}">${v.icon} ${v.label}</option>`
+  ).join('');
+  openModal(`
+    <div class="modal-title">🔍 Signaler un désordre</div>
+    <div class="field">
+      <label>Catégorie</label>
+      <select id="d-cat" onchange="updateDesordreTypes(this.value)">${catOptions}</select>
+    </div>
+    <div class="field">
+      <label>Type précis</label>
+      <select id="d-type"></select>
+    </div>
+    <div class="field"><label>Titre</label><input id="d-title" type="text" placeholder="Décrivez le désordre en quelques mots..."></div>
+    <div class="field"><label>Description</label><textarea id="d-desc" placeholder="Localisation, étendue, observations..."></textarea></div>
+    <div class="field"><label>Sévérité</label>
+      <select id="d-sev">
+        <option value="low">Faible</option>
+        <option value="medium">Moyen</option>
+        <option value="high" selected>Élevé</option>
+        <option value="critical">Critique</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Photos (optionnelles)</label>
+      <button type="button" onclick="el('d-photos').click()" style="width:100%;background:var(--bg3);border:1.5px dashed var(--border);border-radius:10px;padding:12px;font-size:13px;color:var(--text2);cursor:pointer">📷 Joindre des photos</button>
+      <input type="file" id="d-photos" accept="image/*" multiple style="display:none" onchange="previewDesordrePhotos(this)">
+      <div id="d-photos-preview" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"></div>
+    </div>
+    <button class="btn btn-primary" onclick="saveDesordre('${chantierId}')">🔍 Enregistrer le désordre</button>
+  `);
+  setTimeout(() => updateDesordreTypes('structurel'), 50);
+}
+function updateDesordreTypes(category) {
+  const sel = el('d-type');
+  if (!sel) return;
+  const types = DESORDRES_TYPES[category]?.types || ['Autre'];
+  sel.innerHTML = types.map(t => `<option value="${t}">${t}</option>`).join('');
+}
+function previewDesordrePhotos(input) {
+  const preview = el('d-photos-preview');
+  if (!preview) return;
+  preview.innerHTML = '';
+  Array.from(input.files).slice(0,4).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = document.createElement('img');
+      img.src = e.target.result;
+      img.style.cssText = 'width:72px;height:72px;object-fit:cover;border-radius:8px';
+      img.dataset.src = e.target.result;
+      preview.appendChild(img);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+async function saveDesordre(chantierId) {
+  const title = el('d-title')?.value.trim();
+  if (!title) { toast('Saisissez un titre', 'warning'); return; }
+  const category = el('d-cat')?.value || 'autre';
+  const type     = el('d-type')?.value || 'Autre';
+  const reporter = me();
+  const chantier = db.chantiers.find(x => x.id === chantierId);
+
+  // Récupérer les photos sélectionnées (miniatures)
+  const photoImgs = el('d-photos-preview')?.querySelectorAll('img') || [];
+  const photos = [];
+  for (const img of photoImgs) {
+    if (img.dataset.src) {
+      const compressed = await compressImage(img.dataset.src, 600);
+      photos.push(compressed);
+    }
+  }
+
+  const desordre = {
+    id: uid(), chantierId, category, type, title,
+    description: el('d-desc')?.value || '',
+    severity:    el('d-sev')?.value || 'high',
+    status:      'open',
+    photos,
+    createdBy:     reporter.id,
+    createdByName: reporter.name,
+    createdAt:     now()
+  };
+  if (!db.desordres) db.desordres = [];
+  db.desordres.push(desordre);
+  const cat = DESORDRES_TYPES[category];
+  addAuditLog('desordre', `Désordre ${cat?.label||category} signalé : "${title}" sur ${chantier?.name||'?'} par ${reporter.name}`);
+  dbSave(); closeModal();
+  toast('Désordre enregistré ✓', 'success');
+  renderChantier(chantierId);
+}
+function resolveDesordre(desordreId) {
+  const d = (db.desordres||[]).find(x => x.id === desordreId);
+  if (!d) return;
+  d.status = 'resolved'; d.resolvedAt = now(); d.resolvedBy = me()?.id;
+  addAuditLog('desordre', `Désordre résolu : "${d.title}" par ${me()?.name}`);
+  dbSave(); renderChantier(d.chantierId);
+  toast('Désordre marqué résolu ✓', 'success');
+}
+function resolveDesordreAdmin(desordreId) {
+  const d = (db.desordres||[]).find(x => x.id === desordreId);
+  if (!d) return;
+  d.status = 'resolved'; d.resolvedAt = now(); d.resolvedBy = me()?.id;
+  addAuditLog('desordre', `Désordre résolu : "${d.title}" par ${me()?.name}`);
+  dbSave(); renderAdmin();
+  toast('Désordre marqué résolu ✓', 'success');
+}
+function openImgModal(itemId, type) {
+  const item = type === 'issue'
+    ? (db.issues||[]).find(x=>x.id===itemId)
+    : (db.desordres||[]).find(x=>x.id===itemId);
+  const src = type === 'issue' ? item?.photo : item?.photos?.[0];
+  if (!src) return;
+  openModal(`<img src="${src}" style="width:100%;border-radius:8px;max-height:70vh;object-fit:contain">`);
+}
