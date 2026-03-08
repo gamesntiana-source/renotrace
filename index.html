@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="RénoTrace Pro">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0F172A">
+<meta name="description" content="RénoTrace Pro — Suivi de chantier professionnel avec IA">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<title>RénoTrace Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+
+<!-- ═══ ÉCRAN : CONNEXION ═══ -->
+<div id="loginScreen" class="screen active">
+  <div class="login-bg"></div>
+  <div class="login-content">
+    <div class="login-top">
+      <div class="login-logo">Réno<span>Trace</span></div>
+      <div class="login-version">Pro v2.0</div>
+      <div class="login-tagline">Suivi de chantier intelligent</div>
+      <div class="security-badge">🔒 Chiffrement AES-256 · PBKDF2</div>
+    </div>
+    <div class="login-form">
+
+      <!-- ── PANNEAU CONNEXION (défaut) ── -->
+      <div id="loginPanel">
+        <h2>Connexion</h2>
+        <p>Email ou identifiant + mot de passe</p>
+        <div class="field">
+          <label>Email ou identifiant</label>
+          <input id="loginUser" type="text" placeholder="admin ou votre@email.com" autocomplete="username" autocapitalize="none">
+        </div>
+        <div class="field">
+          <label>Mot de passe</label>
+          <div class="pwd-wrap">
+            <input id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password">
+            <button class="pwd-toggle" onclick="togglePwd()" type="button">👁</button>
+          </div>
+        </div>
+        <button class="btn btn-primary" id="loginBtn" onclick="doLogin()">Se connecter</button>
+        <div id="loginError" class="login-error"></div>
+        <div class="login-links">
+          <button class="login-link" onclick="showForgotPanel()">Mot de passe oublié ?</button>
+          <button class="login-link" onclick="showRequestPanel()">Demander un accès</button>
+        </div>
+        <div class="login-links" style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.08)">
+          <button class="login-link" onclick="showRestorePanel()">🔄 Restaurer depuis une sauvegarde</button>
+        </div>
+      </div>
+
+      <!-- ── PANNEAU MOT DE PASSE OUBLIÉ ── -->
+      <div id="forgotPanel" style="display:none">
+        <button class="login-back" onclick="showLoginPanel()">← Retour</button>
+        <h2>Mot de passe oublié</h2>
+        <p>Entrez l'email associé à votre compte</p>
+        <div class="field">
+          <label>Votre email</label>
+          <input id="forgotEmail" type="email" placeholder="votre@email.com" autocapitalize="none">
+        </div>
+        <button class="btn btn-primary" onclick="doForgotPassword()">Réinitialiser</button>
+        <div id="forgotResult" class="forgot-result" style="display:none">
+          <div class="forgot-result-title">✓ Mot de passe temporaire</div>
+          <div class="forgot-temp-pwd" id="forgotTempPwd"></div>
+          <div class="forgot-result-note">Notez-le, connectez-vous, puis changez-le dans votre profil.</div>
+        </div>
+        <div id="forgotError" class="login-error"></div>
+      </div>
+
+      <!-- ── PANNEAU DEMANDE D'ACCÈS ── -->
+      <div id="requestPanel" style="display:none">
+        <button class="login-back" onclick="showLoginPanel()">← Retour</button>
+        <h2>Demander un accès</h2>
+        <p>L'administrateur examinera votre demande et vous contactera</p>
+        <div class="field">
+          <label>Nom complet</label>
+          <input id="reqName" type="text" placeholder="Jean Dupont" autocomplete="name">
+        </div>
+        <div class="field">
+          <label>Email</label>
+          <input id="reqEmail" type="email" placeholder="jean@gmail.com" autocapitalize="none">
+        </div>
+        <div class="field">
+          <label>Fonction souhaitée</label>
+          <select id="reqRole">
+            <option value="technicien">Technicien</option>
+            <option value="chef">Chef de chantier</option>
+            <option value="conducteur">Conducteur de travaux</option>
+            <option value="dirigeant">Dirigeant</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" onclick="doRequestAccess()">Envoyer la demande</button>
+        <div id="requestSuccess" class="request-success" style="display:none">
+          <div style="font-size:28px">📨</div>
+          <div style="font-weight:800;color:var(--blue)">Demande envoyée !</div>
+          <div style="font-size:13px;color:var(--text2);margin-top:4px">L'administrateur vous contactera par email dès que votre accès sera validé.</div>
+        </div>
+        <div id="requestError" class="login-error"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ÉCRAN : DASHBOARD ═══ -->
+<div id="dashScreen" class="screen">
+  <div class="topbar">
+    <div class="topbar-brand">Réno<span>Trace</span></div>
+    <div class="topbar-actions">
+      <button class="avatar-btn" id="avatarBtn" onclick="navigate('profile')">?</button>
+    </div>
+  </div>
+  <div class="screen-body" id="dashBody"></div>
+</div>
+
+<!-- ═══ ÉCRAN : CHANTIERS ═══ -->
+<div id="chantiersScreen" class="screen">
+  <div class="topbar" style="flex-direction:column;align-items:stretch;gap:10px;padding-bottom:12px">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div class="topbar-title">Chantiers</div>
+      <button class="icon-btn" id="addChantierBtn" onclick="showAddChantier()">＋</button>
+    </div>
+    <input class="search-input" id="chantiersSearchInput" placeholder="Rechercher un chantier..." oninput="renderChantiers(this.value)" style="margin:0">
+  </div>
+  <div class="screen-body" id="chantiersBody"></div>
+</div>
+
+<!-- ═══ ÉCRAN : CHANTIER DÉTAIL ═══ -->
+<div id="chantierScreen" class="screen">
+  <div class="topbar">
+    <button class="back-btn" onclick="navigate('chantiers')">←</button>
+    <div class="topbar-title" id="chantierTitle">Chantier</div>
+    <button class="icon-btn" id="chantierMenuBtn">⋮</button>
+  </div>
+  <div class="screen-body" id="chantierBody"></div>
+</div>
+
+<!-- ═══ ÉCRAN : CAMÉRA ═══ -->
+<div id="cameraScreen" class="screen">
+  <div class="camera-topbar">
+    <button class="cam-back" onclick="stopCamera()">✕</button>
+    <div class="cam-title">Nouvelle photo</div>
+    <div></div>
+  </div>
+  <div class="camera-area">
+    <video id="camVideo" autoplay playsinline muted></video>
+    <canvas id="camCanvas" style="display:none"></canvas>
+    <div class="cam-overlay">
+      <div class="cam-gps-tag" id="camGpsTag">📍 Localisation...</div>
+    </div>
+  </div>
+  <div class="camera-controls">
+    <div class="cam-field">
+      <label>Chantier</label>
+      <select id="camChantier"></select>
+    </div>
+    <div class="cam-field">
+      <label>Surface</label>
+      <div class="surface-pills" id="surfacePills">
+        <button class="pill active" data-s="Sol">Sol</button>
+        <button class="pill" data-s="Mur">Mur</button>
+        <button class="pill" data-s="Plafond">Plafond</button>
+        <button class="pill" data-s="Facade">Façade</button>
+        <button class="pill" data-s="Autre">Autre</button>
+      </div>
+    </div>
+    <div class="cam-field">
+      <label>Note</label>
+      <input id="camNote" type="text" placeholder="Observations..." class="cam-input">
+    </div>
+    <div class="cam-actions">
+      <button class="cam-import" onclick="importPhoto()">🖼 Galerie</button>
+      <button class="cam-shoot" id="camShoot" onclick="capturePhoto()">📸</button>
+      <button class="cam-flip" onclick="flipCamera()">🔄</button>
+    </div>
+  </div>
+  <input type="file" id="photoInput" accept="image/*" style="display:none" multiple>
+</div>
+
+<!-- ═══ ÉCRAN : IA ═══ -->
+<div id="aiScreen" class="screen">
+  <div class="topbar">
+    <div class="topbar-title">🤖 Assistant IA</div>
+    <button class="icon-btn" onclick="clearAiChat()">↺</button>
+  </div>
+  <div class="screen-body ai-screen-body">
+    <div class="ai-messages" id="aiMessages"></div>
+    <div class="ai-quick-prompts" id="aiPrompts"></div>
+    <div class="ai-input-bar">
+      <input id="aiInput" type="text" placeholder="Posez votre question..." class="ai-input">
+      <button class="ai-send" onclick="sendAI()">➤</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ÉCRAN : ADMIN ═══ -->
+<div id="adminScreen" class="screen">
+  <div class="topbar">
+    <button class="back-btn" onclick="navigate('profile')">←</button>
+    <div class="topbar-title">Administration</div>
+  </div>
+  <div class="screen-body" id="adminBody"></div>
+</div>
+
+<!-- ═══ ÉCRAN : PROFIL ═══ -->
+<div id="profileScreen" class="screen">
+  <div class="topbar">
+    <div class="topbar-title">Mon profil</div>
+    <button class="icon-btn" onclick="doLogout()">⏻</button>
+  </div>
+  <div class="screen-body" id="profileBody"></div>
+</div>
+
+<!-- ═══ NAVIGATION BAS ═══ -->
+<nav class="bottom-nav" id="bottomNav" style="display:none">
+  <button class="nav-item" data-nav="dash" onclick="navigate('dash')">
+    <span class="nav-icon">🏠</span>
+    <span>Accueil</span>
+  </button>
+  <button class="nav-item" data-nav="chantiers" onclick="navigate('chantiers')">
+    <span class="nav-icon">🏗️</span>
+    <span>Chantiers</span>
+  </button>
+  <button class="nav-cam" onclick="startCamera()">
+    <span class="nav-cam-icon">📷</span>
+  </button>
+  <button class="nav-item" data-nav="ai" onclick="navigate('ai')">
+    <span class="nav-icon">🤖</span>
+    <span>IA</span>
+  </button>
+  <button class="nav-item" data-nav="profile" onclick="navigate('profile')">
+    <span class="nav-icon">👤</span>
+    <span>Profil</span>
+  </button>
+</nav>
+
+<!-- ═══ MODAL OVERLAY ═══ -->
+<div id="modalOverlay" class="modal-overlay" onclick="closeModal(event)">
+  <div class="modal-box" id="modalBox"></div>
+</div>
+
+<!-- ═══ TOAST ═══ -->
+<div id="toastContainer" class="toast-container"></div>
+
+<!-- ═══ INSTALL BANNER ═══ -->
+<div id="installBanner" class="install-banner" style="display:none">
+  <span>📲 Installez RénoTrace Pro sur votre téléphone</span>
+  <div>
+    <button onclick="doInstall()" class="install-yes">Installer</button>
+    <button onclick="document.getElementById('installBanner').style.display='none'" class="install-no">✕</button>
+  </div>
+</div>
+
+<!-- Firebase SDK (compat v9) — chargé uniquement si configuré -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="./app.js"></script>
+</body>
+</html>
